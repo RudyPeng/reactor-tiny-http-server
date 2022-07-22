@@ -1,6 +1,7 @@
 #include "Channel.h"
 #include "Epoll.h"
 #include <unistd.h>
+#include <cstdio>
 
 Channel::Channel(Epoll *_ep, int _fd)
     : fd(_fd), inEpoll(false), events(0), revents(0), ep(_ep) {}

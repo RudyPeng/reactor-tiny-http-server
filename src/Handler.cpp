@@ -83,6 +83,7 @@ int Handler::getRequestHeader() {
       cgi = true;
     }
   }
+  return n;
 }
 
 /* 目前仅处理GET AND POST */

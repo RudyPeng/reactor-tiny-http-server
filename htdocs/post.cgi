@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #coding:utf-8
 import sys,os
 import urllib
@@ -19,7 +19,6 @@ if length:
     print ('</ul>')
     print ('</body>')
     print ('</html>')
-    
 else:
     print ("Content-type:text/html\n")
     print ('no found')
