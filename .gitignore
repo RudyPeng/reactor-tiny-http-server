@@ -1,3 +1,4 @@
 .vscode/
 src/server
 build/
+.git/

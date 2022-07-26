@@ -1,5 +1,5 @@
-#include "Epoll.h"
-#include "Channel.h"
+#include "rever_epoll.h"
+#include "rever_channel.h"
 #include "util.h"
 #include <arpa/inet.h>
 #include <cstring>
@@ -10,7 +10,8 @@ static std::mutex mtx;
 
 Epoll::Epoll() : epfd(-1) {
   epfd = epoll_create1(0);
-  errIf(epfd == -1, "epoll_create(): ");
+  ERRIF(epfd == -1, "epoll_create(): ");
+  LOG(INFO) << "epoll create, epfd: " << epfd;
   for (int i = 0; i < MAX_EVENTS; ++i) {
     bzero(&events[i], sizeof(struct epoll_event));
   }
@@ -19,6 +20,7 @@ Epoll::Epoll() : epfd(-1) {
 Epoll::~Epoll() {
   if (epfd != -1) {
     close(epfd);
+    LOG(INFO) << "epfd: " << epfd << " closed";
     epfd = -1;
   }
 }
@@ -27,13 +29,15 @@ void Epoll::addFd(int fd, uint32_t op) {
   struct epoll_event ev;
   ev.data.fd = fd;
   ev.events = op;
-  errIf(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1, "epoll_ctl: ");
+  ERRIF(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1, "epoll_ctl: ");
+  LOG(INFO) << "fd: " << fd << " add to epoll";
 }
 
 std::vector<Channel *> Epoll::poll(int timeout) {
   std::vector<Channel *> vec;
   int n = epoll_wait(epfd, events, MAX_EVENTS, timeout);
-  errIf(n == -1, "epoll_wait(): ");
+  LOG(INFO) << "nuber of incoming requests: " << n;
+  ERRIF(n == -1, "epoll_wait(): ");
   for (int i = 0; i < n; ++i) {
     Channel *ch = (Channel *)events[i].data.ptr;
     ch->setRevents(events[i].events);
@@ -51,9 +55,10 @@ void Epoll::updateChannel(Channel *ch) {
   ev.events = ch->getEvents();
   if (!ch->isInEpoll()) {
     ch->setInEpoll();
-    errIf(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1, "epoll_ctl: ");
+    LOG(INFO) << "epoll_ctl: " << fd << " add to epoll";
+    ERRIF(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1, "epoll_ctl: ");
   } else {
-    errIf(epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev) == -1, "epoll_ctl modify: ");
+    ERRIF(epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev) == -1, "epoll_ctl modify: ");
   }
 }
 
@@ -62,6 +67,7 @@ void Epoll::deleteChannel(int fd) {
     std::unique_lock<std::mutex> lock(mtx);
     delete fd_channel[fd];
     fd_channel.erase(fd);
+    LOG(INFO) << "channel: " << fd << " deleted";
   }
 }
 
@@ -69,5 +75,6 @@ void Epoll::addToMap(int fd, Channel *ch) {
   {
     std::unique_lock<std::mutex> lock(mtx);
     fd_channel[fd] = ch;
+    LOG(INFO) << "channel: " << fd << " add to map";
   }
 }

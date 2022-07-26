@@ -1,5 +1,5 @@
-#include "Handler.h"
-#include "Epoll.h"
+#include "rever_handler.h"
+#include "rever_epoll.h"
 #include <arpa/inet.h>
 #include <cstring>
 #include <errno.h>
@@ -12,7 +12,8 @@
 #include <thread>
 #include <unistd.h>
 
-#define DEBUG 1
+// after add glog, discard DEBUGLOG
+#define DEBUG 0
 #define DEBUGLOG(x, param)                                                     \
   do {                                                                         \
     if (DEBUG) {                                                               \
@@ -28,15 +29,19 @@ void Handler::readAll() {
     if (n > 0)
       buf.push_back(c);
     else if (n = -1 && errno == EAGAIN) {
+      LOG(INFO) << "ET mode receive end";
       break;
     } else if (n == 0) {
+      LOG(INFO) << fd << " disconnected";
       close(fd);
       break;
     }
   }
 }
 
-Handler::Handler(int _fd) : fd(_fd), buf(""), query_string("") {}
+Handler::Handler(int _fd) : fd(_fd), 
+                            buf(""), 
+                            query_string("") {}
 
 Handler::~Handler() {
   // if (fd != -1) {
@@ -70,7 +75,7 @@ int Handler::getRequestHeader() {
   // ERRIF(n == 0, "Empty Message: ");
   if (n == 0)
     return 0;
-  errIf(n == -1, "Error Connection: ");
+  ERRIF(n == -1, "Error Connection: ");
   std::istringstream is(buf);
   is >> method;
   is >> url;
@@ -83,6 +88,7 @@ int Handler::getRequestHeader() {
       cgi = true;
     }
   }
+  LOG(INFO) << method << " " << url << " " << protocol;
   return n;
 }
 
@@ -242,6 +248,7 @@ void Handler::execute() {
 int Handler::peek() {
   char c = '\0';
   int n = recv(fd, &c, 1, MSG_PEEK);
+  LOG(INFO) << n << " bytes peeked";
   return n;
 }
 
@@ -250,8 +257,10 @@ void Handler::start() {
   if (peek() <= 0)
     return;
   getRequestHeader();
-  if (!isImpl())
+  if (!isImpl()) {
+    LOG(INFO) << "method not implemented";
     return;
+  }
   fileProcess();
   /* Handler生命周期结束了 */
 }

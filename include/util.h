@@ -1,5 +1,12 @@
 #pragma once
 
+#include <glog/logging.h>
 #include <cstdio>
+#include <cstdlib>
 
-void errIf(bool, const char *);
+
+#define ERRIF(b, msg) \
+  if (b) {  \
+    LOG(FATAL) << msg;   \
+    exit(EXIT_FAILURE); \
+  }

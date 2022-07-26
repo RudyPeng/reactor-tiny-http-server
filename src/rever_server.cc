@@ -1,11 +1,11 @@
-#include "Server.h"
-#include "Acceptor.h"
-#include "Channel.h"
-#include "Epoll.h"
-#include "Handler.h"
-#include "InetAddress.h"
-#include "Socket.h"
-#include "ThreadPool.h"
+#include "rever_server.h"
+#include "rever_acceptor.h"
+#include "rever_channel.h"
+#include "rever_epoll.h"
+#include "rever_handler.h"
+#include "rever_inet_address.h"
+#include "rever_socket.h"
+#include "rever_thread_pool.h"
 #include <errno.h>
 #include <unistd.h>
 
@@ -16,7 +16,7 @@ Server::Server()
   acceptor = new Acceptor(epoll);
   std::function<void(int)> cb =
       std::bind(&Server::newConnection, this, std::placeholders::_1);
-  acceptor->setNewConnectionCallback(cb);
+  acceptor->SetNewConnectionCallback(cb);
 }
 
 Server::~Server() {

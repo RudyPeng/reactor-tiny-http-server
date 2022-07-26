@@ -1,4 +1,4 @@
-#include "Server.h"
+#include "rever_server.h"
 #include "util.h"
 #include <errno.h>
 #include <stdio.h>
@@ -6,8 +6,11 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
+#include <glog/logging.h>
 
-int main() {
+int main(int argc, char *argv[]) {
+  google::InitGoogleLogging(argv[0]);
+  LOG(INFO) << "server started";
   Server server;
   server.loop();
 }
