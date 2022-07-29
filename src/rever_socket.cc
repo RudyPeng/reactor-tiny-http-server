@@ -3,13 +3,13 @@
 #include "util.h"
 #include <fcntl.h>
 
-int Socket::create() {
+int Socket::Create() {
   int sock = socket(PF_INET, SOCK_STREAM, 0);
   ERRIF(sock == -1, "socket(): ");
   return sock;
 }
 
-void Socket::bind(InetAddress *ia, int fd) {
+void Socket::Bind(InetAddress *ia, int fd) {
   bool flag = ia->addr.sin_port == 0;
   ERRIF(::bind(fd, (struct sockaddr *)&ia->addr, ia->addr_len) == -1,
         "bind(): ");
@@ -22,15 +22,15 @@ void Socket::bind(InetAddress *ia, int fd) {
   printf("httpd running on port %d\n", ntohs(ia->addr.sin_port));
 }
 
-void Socket::listen(int fd, int backlog) {
+void Socket::Listen(int fd, int backlog) {
   ERRIF(::listen(fd, backlog) == -1, "listen(): ");
 }
 
-int Socket::accept(InetAddress *ia, int fd) {
+int Socket::Accept(InetAddress *ia, int fd) {
   int clnt_sock = ::accept(fd, (struct sockaddr *)&ia->addr, &ia->addr_len);
   return clnt_sock;
 }
 
-void Socket::setnonblocking(int fd) {
+void Socket::SetNonBlocking(int fd) {
   fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }

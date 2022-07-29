@@ -5,7 +5,7 @@
 #define SERVER_STRING "Server: ppphttpd/0.0.1\r\n"
 #define SENDBUF(client, buf) send(client, buf, strlen(buf), 0);
 
-void unimplemented(int client) {
+void Unimplemented(int client) {
   char buf[1024];
   sprintf(buf, "HTTP/1.0 501 Method Not Implemented\r\n");
   SENDBUF(client, buf);
@@ -25,7 +25,7 @@ void unimplemented(int client) {
   SENDBUF(client, buf);
 }
 
-void not_found(int client) {
+void NotFound(int client) {
   char buf[1024];
   sprintf(buf, "HTTP/1.0 404 NOT FOUND\r\n");
   SENDBUF(client, buf);
@@ -47,7 +47,7 @@ void not_found(int client) {
   SENDBUF(client, buf);
 }
 
-void cannot_execute(int client) {
+void CannotExecute(int client) {
   char buf[1024];
   sprintf(buf, "HTTP/1.0 500 Internal Server Error\r\n");
   SENDBUF(client, buf);
@@ -59,7 +59,7 @@ void cannot_execute(int client) {
   SENDBUF(client, buf);
 }
 
-void send_header(int client) {
+void SendHeader(int client) {
   char buf[1024];
   sprintf(buf, "HTTP/1.0 200 OK\n");
   SENDBUF(client, buf);
@@ -71,7 +71,7 @@ void send_header(int client) {
   SENDBUF(client, buf);
 }
 
-void bad_request(int client) {
+void BadRequest(int client) {
   char buf[1024];
   sprintf(buf, "HTTP/1.0 400 BAD REQUEST\r\n");
   SENDBUF(client, buf);

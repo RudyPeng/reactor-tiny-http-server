@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
   LOG(INFO) << "server started";
   Server server;
-  server.loop();
+  server.Loop();
 }
 
 /*

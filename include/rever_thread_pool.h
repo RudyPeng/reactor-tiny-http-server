@@ -8,15 +8,15 @@
 
 class ThreadPool {
 private:
-  std::vector<std::thread> threads;
-  std::queue<std::function<void()>> tasks;
-  std::mutex mtx;
-  std::condition_variable cv;
-  bool stop;
+  std::vector<std::thread> threads_;
+  std::queue<std::function<void()>> tasks_;
+  std::mutex mtx_;
+  std::condition_variable cv_;
+  bool stop_;
 
 public:
   ThreadPool(int size = 10);
   ~ThreadPool();
 
-  void add(std::function<void()>);
+  void Add(std::function<void()>);
 };

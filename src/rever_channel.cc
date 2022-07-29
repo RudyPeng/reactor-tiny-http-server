@@ -5,33 +5,33 @@
 #include <cstdio>
 
 Channel::Channel(Epoll *_ep, int _fd)
-    : fd(_fd), 
-      inEpoll(false),
-      events(0), 
-      revents(0), 
-      ep(_ep) {}
+    : fd_(_fd), 
+      is_in_epoll_(false),
+      events_(0), 
+      revents_(0), 
+      ep_(_ep) {}
 
-void Channel::activate(uint32_t op) {
-  events = op;
-  ep->updateChannel(this);
+void Channel::Activate(uint32_t op) {
+  events_ = op;
+  ep_->UpdateChannel(this);
 }
 
-void Channel::setInEpoll() { inEpoll = true; }
+void Channel::SetInEpoll() { is_in_epoll_ = true; }
 
-void Channel::setRevents(uint32_t _revents) { revents = _revents; }
+void Channel::SetRevents(uint32_t _revents) { revents_ = _revents; }
 
-void Channel::handleEvent() {
-  if (this->revents & EPOLLRDHUP) {
+void Channel::HandleEvent() {
+  if (this->revents_ & EPOLLRDHUP) {
     printf("EPOLLRDHUP\n");
-    LOG(INFO) << "fd: " << fd << " closed";
-    close(fd);
+    LOG(INFO) << "fd: " << fd_ << " closed";
+    close(fd_);
   } else {
-    callback();
+    callback_();
   }
-  // ep->deleteChannel(this->fd);
+  // ep_->DeleteChannel(this->fd_);
 }
 
 
-void Channel::setCallback(std::function<void()> _cb) { callback = _cb; }
+void Channel::SetCallback(std::function<void()> _cb) { callback_ = _cb; }
 
 Channel::~Channel() {}

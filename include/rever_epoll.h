@@ -9,18 +9,19 @@ class Channel;
 
 class Epoll {
 private:
-  int epfd;
-  std::unordered_map<int, Channel *> fd_channel;
+  int epfd_;
+  std::unordered_map<int, Channel *> fd_channel_;
   /* 保存到来的事件的数组 */
-  struct epoll_event events[MAX_EVENTS];
+  // TODO may need use heap allocate since stack allocate may cause stack overflow
+  struct epoll_event events_[MAX_EVENTS];
 
 public:
   Epoll();
   ~Epoll();
 
-  void addFd(int fd, uint32_t op);
-  void updateChannel(Channel *);
-  void deleteChannel(int); /* 根据fd删除对应的channel */
-  void addToMap(int fd, Channel *);
+  void AddFd(int fd, uint32_t op);
+  void UpdateChannel(Channel *);
+  void DeleteChannel(int); /* 根据fd删除对应的channel */
+  void AddToMap(int fd, Channel *);
   std::vector<Channel *> poll(int timeout = -1);
 };

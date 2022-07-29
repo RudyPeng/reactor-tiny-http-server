@@ -7,16 +7,16 @@ class Acceptor;
 class ThreadPool;
 class Server {
 private:
-  Epoll *epoll;
-  Acceptor *acceptor;
-  ThreadPool *threadpool;
+  Epoll *epoll_;
+  Acceptor *acceptor_;
+  ThreadPool *threadpool_;
 
 public:
   Server();
   ~Server();
 
-  void loop();
-  void handleReadEvent(int);
-  void newConnection(int);
-  void addThread(std::function<void(void)>);
+  void Loop();
+  void HandleReadEvent(int);
+  void NewConnection(int);
+  void AddThread(std::function<void(void)>);
 };
