@@ -1,4 +1,6 @@
 #include "rever_server.h"
+#include <errno.h>
+#include <unistd.h>
 #include "rever_acceptor.h"
 #include "rever_channel.h"
 #include "rever_epoll.h"
@@ -6,10 +8,8 @@
 #include "rever_inet_address.h"
 #include "rever_socket.h"
 #include "rever_thread_pool.h"
-#include <errno.h>
-#include <unistd.h>
 
-void showNewConnection(InetAddress &cli_addr, int sock);
+void ShowNewConnection(InetAddress& cli_addr, int sock);
 
 Server::Server()
     : epoll_(new Epoll()), acceptor_(nullptr), threadpool_(new ThreadPool()) {
@@ -32,9 +32,9 @@ void Server::NewConnection(int sock) {
     int cli_sock = Socket::Accept(&cli_addr, sock);
     if (cli_sock < 0 && errno == EAGAIN)
       break;
-    // showNewConnection(cli_addr, cli_sock);
+    ShowNewConnection(cli_addr, cli_sock);
     Socket::SetNonBlocking(cli_sock);
-    Channel *ch = new Channel(epoll_, cli_sock);
+    Channel* ch = new Channel(epoll_, cli_sock);
     std::function<void()> sock_cb =
         std::bind(&Server::HandleReadEvent, this, cli_sock);
     std::function<void()> add_cb = std::bind(&Server::AddThread, this, sock_cb);
@@ -52,9 +52,10 @@ void Server::HandleReadEvent(int sock) {
   close(sock);
 }
 
-void showNewConnection(InetAddress &cli_addr, int sock) {
-  printf("new client fd %d ip: %s port: %d\n", sock,
-         inet_ntoa(cli_addr.addr.sin_addr), ntohs(cli_addr.addr.sin_port));
+void ShowNewConnection(InetAddress& cli_addr, int sock) {
+  LOG(INFO) << "new client fd " << sock
+            << " ip: " << inet_ntoa(cli_addr.addr.sin_addr)
+            << " port: " << ntohs(cli_addr.addr.sin_port);
 }
 
 void Server::Loop() {
@@ -67,4 +68,6 @@ void Server::Loop() {
   }
 }
 
-void Server::AddThread(std::function<void()> func) { threadpool_->Add(func); }
+void Server::AddThread(std::function<void()> func) {
+  threadpool_->Add(func);
+}

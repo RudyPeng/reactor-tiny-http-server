@@ -21,9 +21,10 @@ Requirement:
     ./reactor_httpd
 ## TODO
 * replace `std::mutex` with `std::shared_timed_mutex`
-* add LOG
+* ~~add LOG~~
 * ~~工欲善其事，必先利其器, use Cmake arrange this program~~
-* rearrange the project use Chromium/Google C++ style
+* ~~rearrange the project use Chromium/Google C++ style~~
+* add C++ new feature
 
 ## Link
 [30 dayas make cpp server](https://github.com/yuesong-feng/30dayMakeCppServer)

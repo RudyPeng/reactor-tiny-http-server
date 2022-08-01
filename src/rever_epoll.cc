@@ -3,10 +3,11 @@
 #include "util.h"
 #include <arpa/inet.h>
 #include <cstring>
-#include <mutex>
 #include <unistd.h>
 
-static std::mutex mtx;
+namespace {
+  std::shared_mutex mtx;
+}
 
 Epoll::Epoll() : epfd_(-1) {
   epfd_ = epoll_create1(0);
@@ -64,7 +65,7 @@ void Epoll::UpdateChannel(Channel *ch) {
 
 void Epoll::DeleteChannel(int fd) {
   {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock lock(mtx);
     delete fd_channel_[fd];
     fd_channel_.erase(fd);
     LOG(INFO) << "channel: " << fd << " deleted";
@@ -73,8 +74,13 @@ void Epoll::DeleteChannel(int fd) {
 
 void Epoll::AddToMap(int fd, Channel *ch) {
   {
-    std::unique_lock<std::mutex> lock(mtx);
+    std::unique_lock lock(mtx);
     fd_channel_[fd] = ch;
     LOG(INFO) << "channel: " << fd << " add to map";
   }
+}
+
+Channel * Epoll::GetChannel(int fd) {
+  std::shared_lock lock(mtx);
+  return fd_channel_[fd];
 }

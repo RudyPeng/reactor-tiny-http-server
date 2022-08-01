@@ -2,7 +2,8 @@
 #include <sys/epoll.h>
 #include <unordered_map>
 #include <vector>
-
+#include <shared_mutex>
+#include <mutex>
 #define MAX_EVENTS 1000
 
 class Channel;
@@ -24,4 +25,5 @@ public:
   void DeleteChannel(int); /* 根据fd删除对应的channel */
   void AddToMap(int fd, Channel *);
   std::vector<Channel *> poll(int timeout = -1);
+  Channel *GetChannel(int fd);
 };
